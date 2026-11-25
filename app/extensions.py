@@ -7,9 +7,3 @@ db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 csrf = CSRFProtect()
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    # Temporary: Day 2-la real User model-oda replace pannuvom
-    return None

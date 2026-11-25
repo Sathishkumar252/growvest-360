@@ -15,4 +15,17 @@ body { background: var(--navy); color: var(--text); font-family: 'Segoe UI', sys
 .hero p { color: var(--muted); max-width: 640px; margin: 16px auto 28px; }
 .btn-gv { background: var(--green); color: var(--navy); font-weight: 600; border: none; padding: 12px 28px; border-radius: 10px; }
 .btn-gv:hover { background: #16a34a; color: #fff; }
+.btn-gv.btn-sm { padding: 8px 18px; }
 .gv-footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 30px 12px; }
+.gv-link { color: var(--text); text-decoration: none; }
+.gv-link:hover { color: var(--green); }
+.btn-outline-gv { border: 1px solid var(--green); color: var(--green); }
+.btn-outline-gv:hover { background: var(--green); color: var(--navy); }
+.auth-wrap { max-width: 460px; padding: 50px 12px; }
+.gv-card { background: var(--navy-2); border: 1px solid #233554; border-radius: 16px; padding: 32px; }
+.gv-card h2 { font-weight: 700; margin-bottom: 20px; }
+.gv-input { background: var(--navy); color: var(--text); border: 1px solid #233554; }
+.gv-input:focus { background: var(--navy); color: var(--text); border-color: var(--green); box-shadow: 0 0 0 .2rem rgba(34,197,94,.2); }
+.form-label { color: var(--muted); }
+.auth-alt { color: var(--muted); margin: 18px 0 0; text-align: center; }
+.auth-alt a { color: var(--green); }

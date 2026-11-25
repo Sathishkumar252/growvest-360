@@ -15,10 +15,15 @@ def create_app(config_class=Config):
     csrf.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
+    login_manager.login_message_category = 'warning'
 
-    from importlib import import_module
+    from . import models  # noqa: F401
 
-    main_bp = import_module("app.main.routes").main_bp
+    from .main.routes import main_bp
+    from .auth.routes import auth_bp
+    from .dashboard.routes import dashboard_bp
     app.register_blueprint(main_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(dashboard_bp)
 
     return app

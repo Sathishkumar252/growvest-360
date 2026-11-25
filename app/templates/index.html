@@ -3,6 +3,10 @@
 <section class="hero container">
   <h1>Plan your salary. <span>Grow your wealth.</span></h1>
   <p>Understand your income, manage expenses, compare SIP, gold, FD and more, with clear and honest financial planning.</p>
-  <a href="#" class="btn btn-gv">Get Started</a>
+  {% if current_user.is_authenticated %}
+    <a href="{{ url_for('dashboard.index') }}" class="btn btn-gv">Go to Dashboard</a>
+  {% else %}
+    <a href="{{ url_for('auth.register') }}" class="btn btn-gv">Get Started</a>
+  {% endif %}
 </section>
 {% endblock %}
