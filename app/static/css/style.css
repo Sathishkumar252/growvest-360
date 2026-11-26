@@ -29,3 +29,4 @@ body { background: var(--navy); color: var(--text); font-family: 'Segoe UI', sys
 .form-label { color: var(--muted); }
 .auth-alt { color: var(--muted); margin: 18px 0 0; text-align: center; }
 .auth-alt a { color: var(--green); }
+.form-text { color: var(--muted); }

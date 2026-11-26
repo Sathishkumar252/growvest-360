@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import field %}
+{% block title %}Profile | GrowVest 360{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 720px;">
+  <div class="gv-card">
+    <h2>Your Profile</h2>
+    <p class="text-secondary">This helps GrowVest 360 personalise explanations and budget suggestions.</p>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="row">
+        <div class="col-md-8">{{ field(form.full_name) }}</div>
+        <div class="col-md-4">{{ field(form.age) }}</div>
+      </div>
+      {{ field(form.family_members) }}
+      {{ field(form.risk_tolerance) }}
+      <div class="row">
+        <div class="col-md-6">{{ field(form.horizon_years) }}</div>
+        <div class="col-md-6">{{ field(form.emergency_target_months) }}</div>
+      </div>
+      {{ form.submit(class="btn btn-gv") }}
+    </form>
+  </div>
+</div>
+{% endblock %}

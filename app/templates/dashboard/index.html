@@ -1,10 +1,20 @@
 {% extends 'base.html' %}
 {% block title %}Dashboard | GrowVest 360{% endblock %}
 {% block content %}
+{% set s = current_user.settings %}
 <div class="container py-5">
   <div class="gv-card">
-    <h2>Welcome, {{ current_user.username }} 👋</h2>
-    <p class="text-secondary mb-0">Your dashboard is ready. Next: salary analyzer and expense tracking.</p>
+    <h2>Welcome, {{ s.full_name if s and s.full_name else current_user.username }} 👋</h2>
+    {% if s %}
+      <p class="text-secondary mb-0">
+        Risk comfort: <strong>{{ s.risk_tolerance }}</strong> |
+        Horizon: <strong>{{ s.horizon_years }} years</strong> |
+        Family members: <strong>{{ s.family_members }}</strong>
+      </p>
+    {% else %}
+      <p class="text-secondary mb-3">Complete your profile to get personalised planning.</p>
+      <a href="{{ url_for('profile.index') }}" class="btn btn-gv btn-sm">Complete Profile</a>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
