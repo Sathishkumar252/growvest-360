@@ -1,20 +1,135 @@
 {% extends 'base.html' %}
+{% from '_macros.html' import inr %}
 {% block title %}Dashboard | GrowVest 360{% endblock %}
 {% block content %}
 {% set s = current_user.settings %}
-<div class="container py-5">
-  <div class="gv-card">
-    <h2>Welcome, {{ s.full_name if s and s.full_name else current_user.username }} 👋</h2>
-    {% if s %}
-      <p class="text-secondary mb-0">
-        Risk comfort: <strong>{{ s.risk_tolerance }}</strong> |
-        Horizon: <strong>{{ s.horizon_years }} years</strong> |
-        Family members: <strong>{{ s.family_members }}</strong>
-      </p>
-    {% else %}
-      <p class="text-secondary mb-3">Complete your profile to get personalised planning.</p>
-      <a href="{{ url_for('profile.index') }}" class="btn btn-gv btn-sm">Complete Profile</a>
+{% set summary = d.summary %}
+{% set health = d.health %}
+<div class="container py-4">
+
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+      <h2 class="m-0">Welcome, {{ s.full_name if s and s.full_name else current_user.username }} 👋</h2>
+      <div class="text-secondary">Financial overview for {{ month_label }}</div>
+    </div>
+    <form method="get" class="d-flex gap-2 align-items-center m-0">
+      <input type="month" name="month" value="{{ month_value }}"
+             class="form-control gv-input" style="width:auto" onchange="this.form.submit()">
+    </form>
+  </div>
+
+  {% if not s %}
+  <div class="alert alert-info">Complete your <a href="{{ url_for('profile.index') }}">profile</a> for personalised planning.</div>
+  {% endif %}
+  {% if d.income_count == 0 %}
+  <div class="alert alert-warning">No income added yet. Go to the <a href="{{ url_for('salary.index') }}">Salary Analyzer</a> to add your income and expenses.</div>
+  {% endif %}
+
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-lg">
+      <div class="gv-stat"><div class="label">Monthly income</div><div class="value">{{ inr(summary.monthly_income) }}</div></div>
+    </div>
+    <div class="col-6 col-lg">
+      <div class="gv-stat"><div class="label">Expenses</div><div class="value">{{ inr(summary.total_expenses) }}</div></div>
+    </div>
+    <div class="col-6 col-lg">
+      <div class="gv-stat"><div class="label">Available balance</div>
+        <div class="value {{ 'neg' if summary.remaining < 0 else 'pos' }}">{{ inr(summary.remaining) }}</div></div>
+    </div>
+    <div class="col-6 col-lg">
+      <div class="gv-stat"><div class="label">Savings rate</div>
+        <div class="value {{ 'neg' if summary.savings_rate < 0 else 'pos' }}">{{ "{:.2f}".format(summary.savings_rate) }}%</div></div>
+    </div>
+    <div class="col-12 col-lg">
+      <div class="gv-stat"><div class="label">Annual income</div><div class="value">{{ inr(summary.annual_income) }}</div></div>
+    </div>
+  </div>
+
+  <div class="gv-card mb-3">
+    <h4>Financial health: {{ health.label }}</h4>
+    <div class="alert alert-{{ health.tone }} mb-2">{{ health.message }}</div>
+    {% if summary.total_expenses > 0 %}
+    <div class="text-secondary">
+      Emergency fund target: <strong>{{ inr(health.emergency_target) }}</strong>
+      ({{ health.months }} months of this month's expenses)
+    </div>
     {% endif %}
   </div>
+
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <div class="gv-card h-100">
+        <h4>Income vs Expenses (last 6 months)</h4>
+        <div class="chart-box"><canvas id="trendChart"></canvas></div>
+        <div class="form-text mt-2">Income is shown as your current monthly income for every month.</div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="gv-card h-100">
+        <h4>Spending by category</h4>
+        {% if d.charts.categories.values %}
+          <div class="chart-box"><canvas id="categoryChart"></canvas></div>
+        {% else %}
+          <p class="text-secondary">No expenses for {{ month_label }} yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3 d-flex gap-2">
+    <a href="{{ url_for('salary.index') }}" class="btn btn-gv btn-sm">Manage Salary and Expenses</a>
+    <a href="{{ url_for('profile.index') }}" class="btn btn-outline-gv btn-sm">Edit Profile</a>
+  </div>
 </div>
+
+<script id="chart-data" type="application/json">{{ d.charts|tojson }}</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  const data = JSON.parse(document.getElementById('chart-data').textContent);
+  Chart.defaults.color = '#8892b0';
+  Chart.defaults.borderColor = '#233554';
+  const rupee = v => '₹' + Number(v).toLocaleString('en-IN');
+
+  new Chart(document.getElementById('trendChart'), {
+    type: 'bar',
+    data: {
+      labels: data.trend.labels,
+      datasets: [
+        { label: 'Income', data: data.trend.income, backgroundColor: '#22c55e', borderRadius: 6 },
+        { label: 'Expenses', data: data.trend.expenses, backgroundColor: '#f87171', borderRadius: 6 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { tooltip: { callbacks: { label: c => c.dataset.label + ': ' + rupee(c.parsed.y) } } },
+      scales: { y: { beginAtZero: true, ticks: { callback: v => rupee(v) } } }
+    }
+  });
+
+  const catCanvas = document.getElementById('categoryChart');
+  if (catCanvas && data.categories.values.length) {
+    new Chart(catCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: data.categories.labels,
+        datasets: [{
+          data: data.categories.values,
+          backgroundColor: ['#22c55e', '#38bdf8', '#a78bfa', '#f59e0b', '#f87171', '#34d399', '#fb7185', '#94a3b8'],
+          borderColor: '#112240'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: { callbacks: { label: c => c.label + ': ' + rupee(c.parsed) } }
+        }
+      }
+    });
+  }
+})();
+</script>
 {% endblock %}

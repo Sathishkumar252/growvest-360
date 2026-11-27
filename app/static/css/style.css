@@ -37,3 +37,4 @@ body { background: var(--navy); color: var(--text); font-family: 'Segoe UI', sys
 .gv-stat .neg { color: #f87171; }
 .gv-table { --bs-table-bg: transparent; --bs-table-color: var(--text); --bs-table-border-color: #233554; }
 .gv-card h4 { font-weight: 700; margin-bottom: 16px; }
+.chart-box { position: relative; height: 300px; }
