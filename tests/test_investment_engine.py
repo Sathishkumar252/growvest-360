@@ -30,3 +30,23 @@ def test_gold_scenarios_order_and_rates():
     assert [x['scenario'] for x in s] == ['Conservative', 'Base', 'Optimistic']
     assert s[0]['future_value'] < s[1]['future_value'] < s[2]['future_value']
     assert s[1]['future_value'] == Decimal('215892.50')
+
+
+def test_compare_monthly_values_and_series():
+    from app.services.investment_engine import compare_monthly
+    items = compare_monthly(5000, 10, {'sip': '12', 'rd': '6.5', 'gold': '8', 'savings': '3'})
+    by = {i['key']: i for i in items}
+    assert by['sip']['future_value'] == Decimal('1161695.38')
+    assert by['rd']['future_value'] == Decimal('844939.76')
+    assert by['gold']['future_value'] == Decimal('920828.38')
+    assert by['savings']['future_value'] == Decimal('700177.82')
+    for i in items:
+        assert len(i['series']) == 10
+        assert i['series'] == sorted(i['series'])
+        assert abs(i['series'][-1] - float(i['future_value'])) < 0.01
+
+
+def test_gold_negative_growth():
+    s = gold_scenarios(100000, -1, 120)
+    assert s[0]['future_value'] == Decimal('66483.26')
+    assert s[0]['returns'] < 0

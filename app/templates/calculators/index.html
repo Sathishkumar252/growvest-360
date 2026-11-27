@@ -13,6 +13,18 @@
       </a>
     </div>
     {% endfor %}
+    <div class="col-md-6">
+      <a class="gv-tile" href="{{ url_for('advanced.gold') }}">
+        <h4>Gold Scenario Calculator</h4>
+        <p class="text-secondary mb-0">Test a one-time gold investment under conservative, base and optimistic price-growth assumptions.</p>
+      </a>
+    </div>
+    <div class="col-md-6">
+      <a class="gv-tile" href="{{ url_for('advanced.compare') }}">
+        <h4>Compare Investment Options</h4>
+        <p class="text-secondary mb-0">Same monthly amount in SIP, RD, gold and a savings account, side by side with a growth chart.</p>
+      </a>
+    </div>
   </div>
 </div>
 {% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import field, inr %}
+{% block title %}Compare Investments | GrowVest 360{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <a href="{{ url_for('calculators.index') }}" class="gv-link small">&larr; All calculators</a>
+  <h2 class="mt-2">Compare Investment Options</h2>
+  <p class="text-secondary">Put the same monthly amount into four options and compare the estimates. All rates are editable assumptions.</p>
+
+  <div class="gv-card mb-3">
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="row">
+        <div class="col-md-6">{{ field(form.monthly_amount) }}</div>
+        <div class="col-md-6">{{ field(form.years) }}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">{{ field(form.sip_rate) }}</div>
+        <div class="col-md-6">{{ field(form.rd_rate) }}</div>
+        <div class="col-md-6">{{ field(form.gold_rate) }}</div>
+        <div class="col-md-6">{{ field(form.savings_rate) }}</div>
+      </div>
+      {{ form.submit(class="btn btn-gv") }}
+    </form>
+  </div>
+
+  {% if items %}
+  <div class="gv-card mb-3">
+    <div class="table-responsive">
+      <table class="table gv-table align-middle mb-0">
+        <thead><tr>
+          <th>Option</th><th>Rate used</th><th>Invested</th><th>Estimated returns</th><th>Estimated value</th><th>Risk</th><th>Return type</th>
+        </tr></thead>
+        <tbody>
+          {% for i in items %}
+          <tr>
+            <td><strong>{{ i.name }}</strong></td>
+            <td>{{ "{:.2f}".format(i.rate) }}%</td>
+            <td>{{ inr(i.invested) }}</td>
+            <td>{{ inr(i.returns) }}</td>
+            <td>{{ inr(i.future_value) }}</td>
+            <td><span class="badge gv-risk gv-risk-{{ i.risk|lower|replace(' ', '-') }}">{{ i.risk }}</span></td>
+            <td class="text-secondary small">{{ i.basis }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="gv-card mb-3">
+    <h4>Growth over the years (estimates)</h4>
+    <div class="chart-box" style="height:340px"><canvas id="compareChart"></canvas></div>
+  </div>
+
+  <div class="alert alert-warning small">
+    A higher estimated value usually comes with higher risk and more uncertainty. It does not mean one option is better for you.
+    Think about your goals, time horizon and emergency fund first. Taxes, fees and inflation are not included.
+  </div>
+  <div class="alert alert-secondary small">Educational estimate only. Not investment advice. Market-linked returns are not guaranteed.</div>
+
+  <script id="compare-data" type="application/json">{{ chart|tojson }}</script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script>
+  (function () {
+    const d = JSON.parse(document.getElementById('compare-data').textContent);
+    Chart.defaults.color = '#8892b0';
+    Chart.defaults.borderColor = '#233554';
+    const rupee = v => '₹' + Number(v).toLocaleString('en-IN');
+    const colors = ['#22c55e', '#38bdf8', '#f59e0b', '#a78bfa'];
+    const datasets = d.datasets.map((s, i) => ({
+      label: s.name, data: s.data, borderColor: colors[i], backgroundColor: colors[i], tension: 0.25, pointRadius: 2
+    }));
+    datasets.push({ label: 'Total invested', data: d.invested, borderColor: '#94a3b8', borderDash: [6, 6], pointRadius: 0 });
+    new Chart(document.getElementById('compareChart'), {
+      type: 'line',
+      data: { labels: d.labels, datasets: datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => c.dataset.label + ': ' + rupee(c.parsed.y) } } },
+        scales: { y: { beginAtZero: true, ticks: { callback: v => rupee(v) } } }
+      }
+    });
+  })();
+  </script>
+  {% endif %}
+</div>
+{% endblock %}

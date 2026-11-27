@@ -80,3 +80,41 @@ def gold_scenarios(amount, base_growth, months, spread=3):
         r.update({'scenario': name, 'rate': g})
         out.append(r)
     return out
+
+PRODUCTS = {
+    'sip': {'name': 'Equity Mutual Fund SIP', 'risk': 'High',
+            'basis': 'Assumed (market-linked, not guaranteed)'},
+    'rd': {'name': 'Recurring Deposit', 'risk': 'Low',
+           'basis': 'Bank rate, fixed when you open the RD'},
+    'gold': {'name': 'Gold (monthly buying)', 'risk': 'Medium to High',
+             'basis': 'Assumed (price-linked, not guaranteed)'},
+    'savings': {'name': 'Savings Account', 'risk': 'Low',
+                'basis': 'Bank rate (can change anytime)'},
+}
+
+# Evvoru product-kum use aagura formula
+_MODEL = {'sip': sip, 'rd': rd, 'gold': sip, 'savings': rd}
+
+
+def compare_monthly(monthly, years, rates):
+    """Ore monthly amount-ah 4 options-la potta evlo aagum (estimate).
+    rates = {'sip':..., 'rd':..., 'gold':..., 'savings':...} (percent per year)."""
+    months = years * 12
+    items = []
+    for key in ('sip', 'rd', 'gold', 'savings'):
+        fn = _MODEL[key]
+        rate = D(rates[key])
+        result = fn(monthly, rate, months)
+        series = [float(fn(monthly, rate, y * 12)['future_value'])
+                  for y in range(1, years + 1)]
+        meta = PRODUCTS[key]
+        items.append({
+            **result,
+            'key': key,
+            'name': meta['name'],
+            'rate': rate,
+            'risk': meta['risk'],
+            'basis': meta['basis'],
+            'series': series,
+        })
+    return items

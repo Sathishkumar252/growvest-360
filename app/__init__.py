@@ -25,11 +25,13 @@ def create_app(config_class=Config):
     from .profile.routes import profile_bp
     from .salary.routes import salary_bp
     from .calculators.routes import calc_bp
+    from .calculators.advanced import advanced_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(salary_bp)
     app.register_blueprint(calc_bp)
+    app.register_blueprint(advanced_bp)
 
     return app

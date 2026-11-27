@@ -41,3 +41,7 @@ body { background: var(--navy); color: var(--text); font-family: 'Segoe UI', sys
 .gv-tile { display: block; background: var(--navy-2); border: 1px solid #233554; border-radius: 14px; padding: 22px; color: var(--text); text-decoration: none; height: 100%; }
 .gv-tile:hover { border-color: var(--green); color: var(--text); }
 .gv-tile h4 { color: var(--green); font-weight: 700; }
+.gv-risk { color: var(--navy); font-weight: 600; }
+.gv-risk-low { background: #22c55e; }
+.gv-risk-high { background: #f87171; }
+.gv-risk-medium-to-high { background: #f59e0b; }
