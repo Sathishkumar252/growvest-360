@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import field, inr %}
+{% block title %}{{ cfg.title }} | GrowVest 360{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <a href="{{ url_for('calculators.index') }}" class="gv-link small">&larr; All calculators</a>
+  <h2 class="mt-2">{{ cfg.title }}</h2>
+  <p class="text-secondary">{{ cfg.blurb }}</p>
+
+  <div class="row g-3">
+    <div class="col-lg-5">
+      <div class="gv-card">
+        <form method="post" novalidate>
+          {{ form.hidden_tag() }}
+          {% for f in form if f.type not in ['CSRFTokenField', 'SubmitField'] %}
+            {{ field(f) }}
+          {% endfor %}
+          {{ form.submit(class="btn btn-gv") }}
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      {% if result %}
+      <div class="gv-card">
+        <div class="text-secondary small mb-3">Basis: {{ cfg.basis }}</div>
+        <div class="row g-3 mb-3">
+          <div class="col-sm-4"><div class="gv-stat"><div class="label">Invested</div><div class="value">{{ inr(result.invested) }}</div></div></div>
+          <div class="col-sm-4"><div class="gv-stat"><div class="label">Estimated returns</div><div class="value pos">{{ inr(result.returns) }}</div></div></div>
+          <div class="col-sm-4"><div class="gv-stat"><div class="label">{{ cfg.value_label }}</div><div class="value">{{ inr(result.future_value) }}</div></div></div>
+        </div>
+        <div class="chart-box" style="height:240px"><canvas id="splitChart"></canvas></div>
+        <ul class="mt-3 text-secondary small">
+          {% for n in cfg.notes %}<li>{{ n }}</li>{% endfor %}
+        </ul>
+        <div class="alert alert-secondary mb-0 small">Educational estimate only. Not investment advice. Market-linked returns are not guaranteed.</div>
+      </div>
+      <script id="split-data" type="application/json">{{ {'invested': result.invested|float, 'returns': result.returns|float}|tojson }}</script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+      <script>
+      (function () {
+        const d = JSON.parse(document.getElementById('split-data').textContent);
+        Chart.defaults.color = '#8892b0';
+        new Chart(document.getElementById('splitChart'), {
+          type: 'doughnut',
+          data: { labels: ['Invested', 'Estimated returns'],
+                  datasets: [{ data: [d.invested, d.returns], backgroundColor: ['#38bdf8', '#22c55e'], borderColor: '#112240' }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
+      })();
+      </script>
+      {% else %}
+      <div class="gv-card text-secondary">Enter your numbers and press <strong>Calculate</strong> to see the estimate.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

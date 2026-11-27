@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Calculators | GrowVest 360{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h2>Investment Calculators</h2>
+  <p class="text-secondary">All results are estimates based on the rates you enter. They are not guaranteed.</p>
+  <div class="row g-3">
+    {% for slug, c in calculators.items() %}
+    <div class="col-md-6">
+      <a class="gv-tile" href="{{ url_for('calculators.calculator', slug=slug) }}">
+        <h4>{{ c.title }}</h4>
+        <p class="text-secondary mb-0">{{ c.blurb }}</p>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
