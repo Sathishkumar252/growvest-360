@@ -27,6 +27,7 @@ def create_app(config_class=Config):
     from .calculators.routes import calc_bp
     from .calculators.advanced import advanced_bp
     from .hub.routes import hub_bp
+    from .plan.routes import plan_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
@@ -35,5 +36,6 @@ def create_app(config_class=Config):
     app.register_blueprint(calc_bp)
     app.register_blueprint(advanced_bp)
     app.register_blueprint(hub_bp)
+    app.register_blueprint(plan_bp)
 
     return app
