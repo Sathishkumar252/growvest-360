@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Investment Hub | GrowVest 360{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h2>Investment Hub</h2>
+  <p class="text-secondary">Plain-language guides to common ways of saving and investing in India. Information as of {{ as_of }}.</p>
+
+  <div class="row g-3 mb-4">
+    {% for o in options %}
+    <div class="col-md-6 col-lg-4">
+      <a class="gv-tile" href="{{ url_for('hub.detail', slug=o.slug) }}">
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+          <h4 class="m-0">{{ o.name }}</h4>
+          <span class="badge gv-risk gv-risk-{{ o.risk|lower|replace(' ', '-') }}">{{ o.risk }}</span>
+        </div>
+        <p class="text-secondary mb-2">{{ o.tagline }}</p>
+        <div class="small text-secondary">Return basis: {{ o.return_type }}</div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="gv-card mb-3">
+    <h4>At a glance</h4>
+    <div class="table-responsive">
+      <table class="table gv-table align-middle mb-0">
+        <thead><tr><th>Option</th><th>Risk</th><th>Return basis</th><th>Liquidity</th></tr></thead>
+        <tbody>
+          {% for o in options %}
+          <tr>
+            <td><a class="gv-link" href="{{ url_for('hub.detail', slug=o.slug) }}">{{ o.name }}</a></td>
+            <td><span class="badge gv-risk gv-risk-{{ o.risk|lower|replace(' ', '-') }}">{{ o.risk }}</span></td>
+            <td class="text-secondary small">{{ o.return_type }}</td>
+            <td>{{ o.liquidity_level }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="alert alert-secondary small mb-0">{{ review_note }}</div>
+</div>
+{% endblock %}

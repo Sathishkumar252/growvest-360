@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}{{ o.name }} | GrowVest 360{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <a href="{{ url_for('hub.index') }}" class="gv-link small">&larr; Investment Hub</a>
+  <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+    <h2 class="m-0">{{ o.name }}</h2>
+    <span class="badge gv-risk gv-risk-{{ o.risk|lower|replace(' ', '-') }}">Risk: {{ o.risk }}</span>
+  </div>
+  <p class="text-secondary mt-2">{{ o.description }}</p>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-4"><div class="gv-stat"><div class="label">Return basis</div><div class="small mt-1"><strong>{{ o.return_type }}</strong></div><div class="small text-secondary mt-2">{{ o.return_note }}</div></div></div>
+    <div class="col-md-4"><div class="gv-stat"><div class="label">Liquidity</div><div class="small mt-1"><strong>{{ o.liquidity_level }}</strong></div><div class="small text-secondary mt-2">{{ o.liquidity }}</div></div></div>
+    <div class="col-md-4"><div class="gv-stat"><div class="label">Typical duration</div><div class="small text-secondary mt-1">{{ o.duration }}</div></div></div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-6">
+      <div class="gv-card h-100">
+        <h4>Advantages</h4>
+        <ul class="mb-0">{% for a in o.advantages %}<li>{{ a }}</li>{% endfor %}</ul>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="gv-card h-100">
+        <h4>Disadvantages</h4>
+        <ul class="mb-0">{% for d in o.disadvantages %}<li>{{ d }}</li>{% endfor %}</ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="gv-card mb-3">
+    <h4>Tax considerations <span class="text-secondary small">(as of {{ as_of }})</span></h4>
+    <ul class="mb-0">{% for t in o.tax %}<li>{{ t }}</li>{% endfor %}</ul>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-6">
+      <div class="gv-card h-100">
+        <h4>May suit you if</h4>
+        <ul class="mb-0">{% for s in o.suitable %}<li>{{ s }}</li>{% endfor %}</ul>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="gv-card h-100">
+        <h4>May not suit you if</h4>
+        <ul class="mb-0">{% for s in o.not_suitable %}<li>{{ s }}</li>{% endfor %}</ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    {% for label, endpoint, params in o.calculators %}
+    <a class="btn btn-gv btn-sm" href="{{ url_for(endpoint, **params) }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="alert alert-secondary small mb-0">{{ review_note }}</div>
+</div>
+{% endblock %}

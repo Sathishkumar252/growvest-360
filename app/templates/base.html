@@ -16,6 +16,7 @@
           <a class="gv-link" href="{{ url_for('dashboard.index') }}">Dashboard</a>
           <a class="gv-link" href="{{ url_for('salary.index') }}">Salary</a>
           <a class="gv-link" href="{{ url_for('calculators.index') }}">Calculators</a>
+          <a class="gv-link" href="{{ url_for('hub.index') }}">Hub</a>
           <a class="gv-link" href="{{ url_for('profile.index') }}">Profile</a>
           <form method="post" action="{{ url_for('auth.logout') }}" class="m-0">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
